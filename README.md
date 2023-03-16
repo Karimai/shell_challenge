@@ -40,3 +40,7 @@ I added pre-commit with three hooks for code convention:
 * isort
 * black
 * flake8
+$ pre-commit run --all-files 
+isort....................................................................Passed
+black....................................................................Passed
+flake8...................................................................Passed
