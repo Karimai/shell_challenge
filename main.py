@@ -1,6 +1,5 @@
 import logging
 import os
-import sys
 from datetime import datetime, timedelta
 from typing import Union
 
@@ -9,7 +8,6 @@ import pytz
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel, validator
 
 from convertor import Convertor
 
@@ -46,7 +44,7 @@ async def get_weather(
         latitude, longitude = convertor.get_latlong(str(latitude))
 
     if latitude < -90 or latitude > 90:
-        logger.error('Invalid Latitude range!')
+        logger.error("Invalid Latitude range!")
         return JSONResponse(
             content={
                 "error": "Invalid range error, Latitude must be between -90 and +90 degrees"
@@ -54,7 +52,7 @@ async def get_weather(
             status_code=400,
         )
     if longitude < -180 or longitude > 180:
-        logger.error('Invalid longitude range!')
+        logger.error("Invalid longitude range!")
         return JSONResponse(
             content={
                 "error": "Invalid range error, Longitude must be between -180 and +180 degrees"
