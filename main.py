@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from datetime import datetime, timedelta
@@ -83,9 +84,10 @@ async def get_weather(
             "solar_radiation": solar_radiation,
             "temperature": temperature,
         }
+        start_period_utc = end_period_utc
         forecasts.append(forecast)
-    logger.debug(f"forcasts data sent: {len(forecasts)}")
-    return forecasts
+    logger.debug(f"forecasts data sent: {len(forecasts)}")
+    return JSONResponse(content=json.dumps(forecasts, default=str), status_code=200)
 
 
 @app.get("/")
