@@ -1,4 +1,5 @@
 import http
+import json
 
 from fastapi.testclient import TestClient
 
@@ -21,9 +22,9 @@ def test_get_weather():
             "longitude": -74.0060,
         },
     )
-
     assert response.status_code == http.HTTPStatus.OK
-    assert len(response.json()) == 16
+    response = json.loads(response.text)
+    assert len(eval(response)) == 16
 
     response = client.get(
         "/weather/",
@@ -33,7 +34,8 @@ def test_get_weather():
     )
 
     assert response.status_code == http.HTTPStatus.OK
-    assert len(response.json()) == 16
+    response = json.loads(response.text)
+    assert len(eval(response)) == 16
 
     response = client.get(
         "/weather/",

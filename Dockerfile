@@ -24,6 +24,4 @@ COPY . /app
 EXPOSE 8000
 
 # Start the application
-#CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "80"]
-#CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port 8000 > /app/logs/app.log 2>&1"]
 CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port 8000"]
