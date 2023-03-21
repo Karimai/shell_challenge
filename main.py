@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 from typing import Union
 
 import httpx
-import pytz
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
@@ -39,6 +38,11 @@ def estimate_solar_radiation(latitude: float, longitude: float, cloud_cover):
 async def get_weather(
     latitude: Union[float, int], longitude: Union[float, None] = None
 ):
+    """
+    :param latitude: latitude or postcode
+    :param longitude: longitude or None
+    :return: forecasts for two days
+    """
     if longitude is None:
         logger.info("postal code")
         convertor = Convertor(os.getenv("Default_country"))
@@ -69,24 +73,18 @@ async def get_weather(
     async with httpx.AsyncClient() as client:
         response = await client.get(os.getenv("URL"), params=params)
     data = response.json()
-    start_period_utc = datetime.now(pytz.UTC)
-    forecasts = []
-    for datum in data["dataseries"][0:16]:
-        start_period_utc = start_period_utc
-        end_period_utc = start_period_utc + timedelta(hours=datum["timepoint"])
-        solar_radiation = estimate_solar_radiation(
-            latitude, longitude, datum["cloudcover"]
-        )
-        temperature = datum["temp2m"]  # It is Celsius temperature
-        forecast = {
-            "start_period_utc": start_period_utc,
-            "end_period_utc": end_period_utc,
-            "solar_radiation": solar_radiation,
-            "temperature": temperature,
+    start_period_utc = datetime.strptime(data["init"], "%Y%m%d%H")
+    forecasts = [
+        {
+            "start_period_utc": start_period_utc + timedelta(hours=datum["timepoint"] - 3),
+            "end_period_utc": start_period_utc + timedelta(hours=datum["timepoint"]),
+            "solar_radiation": datum["cloudcover"],
+            "temperature": datum["temp2m"],
         }
-        start_period_utc = end_period_utc
-        forecasts.append(forecast)
-    logger.debug(f"forecasts data sent: {len(forecasts)}")
+        for datum in data["dataseries"][0:16]
+    ]
+
+    logger.debug("forecasts data sent: %s", len(forecasts))
     return JSONResponse(content=json.dumps(forecasts, default=str), status_code=200)
 
 

@@ -9,8 +9,3 @@ services:
     ports:
       - 8000:8000
     restart: always
-
-  loger:
-    container_name: our_loggger
-    volumes:
-      -
